@@ -2,21 +2,26 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/client";
 import { toast } from "react-toastify";
+import { useAdmin } from "../../hooks/useAdmin";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { isAdmin, loading } = useAdmin();
 
   const traducirError = (error) => {
     const traducciones = {
-      "Invalid login credentials": "Credenciales inválidas. Verifica tu correo y contraseña.",
-      "Email not confirmed": "El correo no ha sido confirmado. Revisa tu bandeja de entrada.",
+      "Invalid login credentials":
+        "Credenciales inválidas. Verifica tu correo y contraseña.",
+      "Email not confirmed":
+        "El correo no ha sido confirmado. Revisa tu bandeja de entrada.",
       "User not found": "Usuario no encontrado. Verifica tu correo.",
-      "Password should be at least 6 characters": "La contraseña debe tener al menos 6 caracteres.",
+      "Password should be at least 6 characters":
+        "La contraseña debe tener al menos 6 caracteres.",
       "Auth API error: invalid_grant": "Correo o contraseña incorrectos.",
     };
-    
+
     return traducciones[error] || "Ocurrió un error. Inténtalo de nuevo.";
   };
 
@@ -61,8 +66,8 @@ function Login() {
     if (user) {
       await createProfileIfNotExists(user);
     }
-
-    navigate("/");
+    
+      navigate("/");
   };
 
   return (

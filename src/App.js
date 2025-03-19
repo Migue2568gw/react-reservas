@@ -15,26 +15,10 @@ import { useAdmin } from "./hooks/useAdmin";
 import NotFound from "./pages/NotFound";
 import caramel from "./assets/images/caramel.png";
 import { ToastContainer } from "react-toastify";
-import AdminClientes from "./pages/admin/AdminClientes";
-import AdminServicios from "./pages/admin/AdminServicios";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
   return user ? <Navigate to="/" /> : children;
-}
-
-function ProtectedAdmin({ children }) {
-  const { isAdmin, loading } = useAdmin();
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <img src={caramel} alt="Logo de la barbería" className="loading-logo" />
-      </div>
-    );
-  }
-
-  return isAdmin ? children : <Navigate to="/" />;
 }
 
 function App() {
@@ -59,30 +43,9 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedAdmin>
-              <Admin />
-            </ProtectedAdmin>
-          }
-        />
-        <Route
-          path="/adminServicios"
-          element={
-            <ProtectedAdmin>
-              <AdminClientes />
-            </ProtectedAdmin>
-          }
-        />
-        <Route
-          path="/adminClientes"
-          element={
-            <ProtectedAdmin>
-              <AdminServicios />
-            </ProtectedAdmin>
-          }
-        />
+        <Route path="/adminEmpleados" element={<Admin direc="empleado" />} />
+        <Route path="/adminServicios" element={<Admin direc="servicio" />} />
+        <Route path="/adminClientes" element={<Admin direc="cliente" />} />
         <Route path="/notfound" element={<NotFound />} />
       </Routes>
       <ToastContainer

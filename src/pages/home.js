@@ -9,7 +9,6 @@ function Home() {
   const { isAdmin, loading } = useAdmin();
   const { user } = useAuth();
 
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -20,13 +19,7 @@ function Home() {
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-       {!user ? (
-        <Client />
-      ) : isAdmin ? (
-        <Admin />
-      ) : (
-        <Client />
-      )}  
+      {!user ? <Client /> : isAdmin ? <Admin /> : <Client />}
     </div>
   );
 }

@@ -44,10 +44,9 @@ const NavigationBar = () => {
       <Navbar.Collapse>
         {user ? (
           isMobile ? (
-            // Menú cuando es móvil
             isAdmin ? (
               <>
-                <Navbar.Link href="/admin" className="text-white">
+                <Navbar.Link href="/adminEmpleados" className="text-white">
                   Empleados
                 </Navbar.Link>
                 <Navbar.Link href="/adminServicios" className="text-white">
@@ -77,7 +76,6 @@ const NavigationBar = () => {
               </>
             )
           ) : (
-            // Menú cuando es escritorio
             <>
               <Navbar.Link href="/" className="text-white">
                 Inicio
