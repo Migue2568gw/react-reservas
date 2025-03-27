@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import AdminEmpleados from "./AdminEmpleados";
 import AdminServicios from "./AdminServicios";
@@ -8,22 +8,21 @@ import NotFound from "../NotFound";
 
 const Admin = ({ direc }) => {
   const { isAdmin } = useAdmin();
+  const [navigate, setNavigate] = useState(direc || "empleado");
 
   if (isAdmin === false) {
-    return null; 
-  }else  if (!isAdmin) {
+    return null;
+  } else if (!isAdmin) {
     return <NotFound />;
   }
 
-
- 
   const renderContent = () => {
-    switch (direc) {
-      case "empleado":
+    switch (navigate) {
+      case "empleados":
         return <AdminEmpleados />;
-      case "servicio":
+      case "servicios":
         return <AdminServicios />;
-      case "cliente":
+      case "clientes":
         return <AdminClientes />;
       default:
         return <AdminEmpleados />;
@@ -35,6 +34,7 @@ const Admin = ({ direc }) => {
       <Sidebar
         title="Panel de control"
         items={["Empleados", "Servicios", "Clientes"]}
+        onNavigate={setNavigate}
       />
       <div className="AdContent-list">{renderContent()}</div>
     </div>

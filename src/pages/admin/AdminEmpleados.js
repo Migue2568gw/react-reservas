@@ -7,19 +7,26 @@ const AdminEmpleados = () => {
   const [showPopupAdd, setShowPopupAdd] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [empleadosList, setEmpleadosList] = useState([]);
+  const [rolesList, setRolesList] = useState([]);
+  const [filteredEmpleados, setFilteredEmpleados] = useState([]);
   const [nuevoEmpleado, setNuevoEmpleado] = useState({
     id: null,
     nombre: "",
     telefono: "",
+    email: "",
     foto: "",
-    role: "",
+    role_id: "",
     fotoAntigua: "",
   });
+  const [searchQuery, setSearchQuery] = useState("");
   const [diasNoTrabaja, setDiasNoTrabaja] = useState([]);
 
   useEffect(() => {
     const fetchEmpleados = async () => {
-      const { data, error } = await supabase.from("employees").select("*");
+      const { data, error } = await supabase
+        .from("employees")
+        .select("*, roles(name)");
+        
       if (error) {
         toast.error("Error al obtener empleados");
       } else {
@@ -27,7 +34,17 @@ const AdminEmpleados = () => {
       }
     };
 
+    const fetchRoles = async () => {
+      const { data, error } = await supabase.from("roles").select("*");
+      if (error) {
+        toast.error("Error al obtener roles");
+      } else {
+        setRolesList(data || []);
+      }
+    };
+
     fetchEmpleados();
+    fetchRoles();
 
     const subscription = supabase
       .channel("custom-all-channel")
@@ -42,6 +59,14 @@ const AdminEmpleados = () => {
       supabase.removeChannel(subscription);
     };
   }, []);
+
+  useEffect(() => {
+    setFilteredEmpleados(
+      empleadosList.filter((employee) =>
+        employee.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [empleadosList,searchQuery]);
 
   const handleDayClick = (date) => {
     const dateString = date.toISOString().split("T")[0];
@@ -65,8 +90,9 @@ const AdminEmpleados = () => {
       nombre: "",
       telefono: "",
       foto: "",
+      email: "",
       fotoAntigua: "",
-      role: "",
+      role_id: "",
     });
     setDiasNoTrabaja([]);
     setShowPopupAdd(true);
@@ -108,8 +134,9 @@ const AdminEmpleados = () => {
         .update({
           name: nuevoEmpleado.nombre,
           phone: nuevoEmpleado.telefono,
+          employee_email: nuevoEmpleado.email,
           photo_url: fotoUrl,
-          role: nuevoEmpleado.role,
+          role_id: nuevoEmpleado.role_id,
         })
         .eq("id", nuevoEmpleado.id);
 
@@ -132,20 +159,20 @@ const AdminEmpleados = () => {
       }));
       await supabase.from("shifts").insert(shifts);
 
-      setEmpleadosList(
-        empleadosList.map((emp) =>
-          emp.id === nuevoEmpleado.id
-            ? {
-                ...emp,
-                name: nuevoEmpleado.nombre,
-                phone: nuevoEmpleado.telefono,
-                photo_url: fotoUrl,
-                role: nuevoEmpleado.role,
-                turnos: diasNoTrabaja,
-              }
-            : emp
-        )
-      );
+      const fetchEmpleados = async () => {
+        const { data, error } = await supabase
+          .from("employees")
+          .select("*, roles(name)");
+      
+        if (error) {
+          toast.error("Error al obtener empleados");
+        } else {
+          setEmpleadosList(data || []);
+        }
+      };
+      
+      
+      await fetchEmpleados();      
     } else {
       const { data: empleado, error } = await supabase
         .from("employees")
@@ -153,8 +180,9 @@ const AdminEmpleados = () => {
           {
             name: nuevoEmpleado.nombre,
             phone: nuevoEmpleado.telefono,
+            employee_email: nuevoEmpleado.email,
             photo_url: fotoUrl,
-            role: nuevoEmpleado.role,
+            role_id: nuevoEmpleado.role_id,
           },
         ])
         .select()
@@ -187,9 +215,10 @@ const AdminEmpleados = () => {
       id: null,
       nombre: "",
       telefono: "",
+      email: "",
       foto: "",
       fotoAntigua: "",
-      role: "",
+      role_id: "",
     });
     setDiasNoTrabaja([]);
   };
@@ -208,12 +237,13 @@ const AdminEmpleados = () => {
       toast.error("Error al obtener el empleado");
       return;
     }
-
+    
     setNuevoEmpleado({
       id: resultEmployee.id,
       nombre: resultEmployee.name,
       telefono: resultEmployee.phone,
-      role: resultEmployee.role,
+      email: resultEmployee.employee_email,
+      role_id: resultEmployee.role_id,
       foto: resultEmployee.photo_url,
       fotoAntigua: resultEmployee.photo_url,
     });
@@ -224,6 +254,14 @@ const AdminEmpleados = () => {
       .eq("employee_id", idEmpleado);
 
     setDiasNoTrabaja(shifts?.map((s) => s.day) || []);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = empleadosList.filter((employee) =>
+      employee.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredEmpleados(filtered);
   };
 
   return (
@@ -237,10 +275,12 @@ const AdminEmpleados = () => {
             type="text"
             className="FindTxt"
             placeholder="Buscar Empleado..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
 
-        {empleadosList.map((empleado) => (
+        {filteredEmpleados.map((empleado) => (
           <div
             key={empleado.id}
             className="AdContent-item"
@@ -250,8 +290,9 @@ const AdminEmpleados = () => {
               <img src={empleado.photo_url} alt="Empleado" width={100} />
             )}
             <p>Nombre: {empleado.name}</p>
+            <p>Correo electronico: {empleado.employee_email}</p>
             <p>Teléfono: {empleado.phone}</p>
-            <p>Asignacion: {empleado.role}</p>
+            <p>Asignacion: {empleado.roles.name}</p>
           </div>
         ))}
       </>
@@ -267,22 +308,38 @@ const AdminEmpleados = () => {
                 setNuevoEmpleado({ ...nuevoEmpleado, nombre: e.target.value })
               }
             />
+            <label>Correo electronico</label>
+            <input
+              type="email"
+              value={nuevoEmpleado.email}
+              onChange={(e) =>
+                setNuevoEmpleado({ ...nuevoEmpleado, email: e.target.value })
+              }
+            />
             <label>Teléfono</label>
             <input
-              type="text"
+              type="number"
               value={nuevoEmpleado.telefono}
               onChange={(e) =>
                 setNuevoEmpleado({ ...nuevoEmpleado, telefono: e.target.value })
               }
             />
+
             <label>Asignación</label>
-            <input
-              type="text"
-              value={nuevoEmpleado.role}
+            <select
+              value={nuevoEmpleado.role_id}
               onChange={(e) =>
-                setNuevoEmpleado({ ...nuevoEmpleado, role: e.target.value })
+                setNuevoEmpleado({ ...nuevoEmpleado, role_id: e.target.value })
               }
-            />
+            >
+              <option value="">Seleccione un rol</option>
+              {rolesList.map((rol) => (
+                <option key={rol.id} value={rol.id}>
+                  {rol.name}
+                </option>
+              ))}
+            </select>
+
             <label>Foto</label>
             <input type="file" accept="image/*" onChange={handleFotoUpload} />
 

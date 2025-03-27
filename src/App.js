@@ -43,9 +43,9 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/adminEmpleados" element={<Admin direc="empleado" />} />
-        <Route path="/adminServicios" element={<Admin direc="servicio" />} />
-        <Route path="/adminClientes" element={<Admin direc="cliente" />} />
+        <Route path="/adminEmpleados" element={<Admin direc="empleados" />} />
+        <Route path="/adminServicios" element={<Admin direc="servicios" />} />
+        <Route path="/adminClientes" element={<Admin direc="clientes" />} />
         <Route path="/notfound" element={<NotFound />} />
       </Routes>
       <ToastContainer
