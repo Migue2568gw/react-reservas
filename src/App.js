@@ -15,6 +15,7 @@ import { useAdmin } from "./hooks/useAdmin";
 import NotFound from "./pages/NotFound";
 import caramel from "./assets/images/caramel.png";
 import { ToastContainer } from "react-toastify";
+import EmployeeDate from "./pages/client/EmployeeDate";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -27,6 +28,7 @@ function App() {
       <NavigationBar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/empleado" element={<EmployeeDate />} />
         <Route
           path="/signUp"
           element={
@@ -45,6 +47,7 @@ function App() {
         />
         <Route path="/adminEmpleados" element={<Admin direc="empleados" />} />
         <Route path="/adminServicios" element={<Admin direc="servicios" />} />
+        <Route path="/adminSubServicios" element={<Admin direc="sub servicios" />} />
         <Route path="/adminClientes" element={<Admin direc="clientes" />} />
         <Route path="/notfound" element={<NotFound />} />
       </Routes>

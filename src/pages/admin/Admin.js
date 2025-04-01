@@ -5,6 +5,7 @@ import AdminServicios from "./AdminServicios";
 import AdminClientes from "./AdminClientes";
 import { useAdmin } from "../../hooks/useAdmin";
 import NotFound from "../NotFound";
+import AdminSubServicios from "./AdminSubServicio";
 
 const Admin = ({ direc }) => {
   const { isAdmin } = useAdmin();
@@ -22,6 +23,8 @@ const Admin = ({ direc }) => {
         return <AdminEmpleados />;
       case "servicios":
         return <AdminServicios />;
+      case "sub servicios":
+        return <AdminSubServicios />;
       case "clientes":
         return <AdminClientes />;
       default:
@@ -33,7 +36,7 @@ const Admin = ({ direc }) => {
     <div className="admin-container">
       <Sidebar
         title="Panel de control"
-        items={["Empleados", "Servicios", "Clientes"]}
+        items={["Empleados", "Servicios", "Sub servicios", "Clientes"]}
         onNavigate={setNavigate}
       />
       <div className="AdContent-list">{renderContent()}</div>

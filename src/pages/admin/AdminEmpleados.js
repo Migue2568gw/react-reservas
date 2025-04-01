@@ -17,6 +17,8 @@ const AdminEmpleados = () => {
     foto: "",
     role_id: "",
     fotoAntigua: "",
+    horainicio: "",
+    horafin: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [diasNoTrabaja, setDiasNoTrabaja] = useState([]);
@@ -26,7 +28,7 @@ const AdminEmpleados = () => {
       const { data, error } = await supabase
         .from("employees")
         .select("*, roles(name)");
-        
+
       if (error) {
         toast.error("Error al obtener empleados");
       } else {
@@ -66,7 +68,7 @@ const AdminEmpleados = () => {
         employee.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
-  }, [empleadosList,searchQuery]);
+  }, [empleadosList, searchQuery]);
 
   const handleDayClick = (date) => {
     const dateString = date.toISOString().split("T")[0];
@@ -93,6 +95,8 @@ const AdminEmpleados = () => {
       email: "",
       fotoAntigua: "",
       role_id: "",
+      horainicio: "",
+      horafin: "",
     });
     setDiasNoTrabaja([]);
     setShowPopupAdd(true);
@@ -132,11 +136,13 @@ const AdminEmpleados = () => {
       const { error } = await supabase
         .from("employees")
         .update({
-          name: nuevoEmpleado.nombre,
+          name: nuevoEmpleado.nombre.toUpperCase(),
           phone: nuevoEmpleado.telefono,
           employee_email: nuevoEmpleado.email,
           photo_url: fotoUrl,
           role_id: nuevoEmpleado.role_id,
+          start_time: nuevoEmpleado.horainicio,
+          end_time: nuevoEmpleado.horafin,
         })
         .eq("id", nuevoEmpleado.id);
 
@@ -154,8 +160,6 @@ const AdminEmpleados = () => {
       const shifts = diasNoTrabaja.map((dia) => ({
         employee_id: nuevoEmpleado.id,
         day: dia,
-        start_time: "09:00",
-        end_time: "21:00",
       }));
       await supabase.from("shifts").insert(shifts);
 
@@ -163,26 +167,27 @@ const AdminEmpleados = () => {
         const { data, error } = await supabase
           .from("employees")
           .select("*, roles(name)");
-      
+
         if (error) {
           toast.error("Error al obtener empleados");
         } else {
           setEmpleadosList(data || []);
         }
       };
-      
-      
-      await fetchEmpleados();      
+
+      await fetchEmpleados();
     } else {
       const { data: empleado, error } = await supabase
         .from("employees")
         .insert([
           {
-            name: nuevoEmpleado.nombre,
+            name: nuevoEmpleado.nombre.toUpperCase(),
             phone: nuevoEmpleado.telefono,
             employee_email: nuevoEmpleado.email,
             photo_url: fotoUrl,
             role_id: nuevoEmpleado.role_id,
+            start_time: nuevoEmpleado.horainicio,
+            end_time: nuevoEmpleado.horafin,
           },
         ])
         .select()
@@ -198,16 +203,23 @@ const AdminEmpleados = () => {
       const shifts = diasNoTrabaja.map((dia) => ({
         employee_id: empleado.id,
         day: dia,
-        start_time: "09:00",
-        end_time: "21:00",
       }));
 
       await supabase.from("shifts").insert(shifts);
 
-      setEmpleadosList([
-        ...empleadosList,
-        { ...empleado, turnos: diasNoTrabaja },
-      ]);
+      const fetchEmpleados = async () => {
+        const { data, error } = await supabase
+          .from("employees")
+          .select("*, roles(name)");
+
+        if (error) {
+          toast.error("Error al obtener empleados");
+        } else {
+          setEmpleadosList(data || []);
+        }
+      };
+
+      await fetchEmpleados();
     }
 
     setShowPopupAdd(false);
@@ -219,6 +231,8 @@ const AdminEmpleados = () => {
       foto: "",
       fotoAntigua: "",
       role_id: "",
+      horainicio: "",
+      horafin: "",
     });
     setDiasNoTrabaja([]);
   };
@@ -237,7 +251,7 @@ const AdminEmpleados = () => {
       toast.error("Error al obtener el empleado");
       return;
     }
-    
+
     setNuevoEmpleado({
       id: resultEmployee.id,
       nombre: resultEmployee.name,
@@ -246,6 +260,8 @@ const AdminEmpleados = () => {
       role_id: resultEmployee.role_id,
       foto: resultEmployee.photo_url,
       fotoAntigua: resultEmployee.photo_url,
+      horainicio: resultEmployee.start_time,
+      horafin: resultEmployee.end_time,
     });
 
     const { data: shifts } = await supabase
@@ -323,6 +339,35 @@ const AdminEmpleados = () => {
               onChange={(e) =>
                 setNuevoEmpleado({ ...nuevoEmpleado, telefono: e.target.value })
               }
+            />
+
+            <label>Hora entrada</label>
+            <input
+              type="time"
+              value={nuevoEmpleado.horainicio || ""}
+              onChange={(e) => {
+                const timeValue = e.target.value;
+                const formattedTime = timeValue
+                  ? `${timeValue}:00`.substring(0, 8)
+                  : "";
+                setNuevoEmpleado({
+                  ...nuevoEmpleado,
+                  horainicio: formattedTime,
+                });
+              }}
+            />
+
+            <label>Hora salida</label>
+            <input
+              type="time"
+              value={nuevoEmpleado.horafin || ""}
+              onChange={(e) => {
+                const timeValue = e.target.value;
+                const formattedTime = timeValue
+                  ? `${timeValue}:00`.substring(0, 8)
+                  : "";
+                setNuevoEmpleado({ ...nuevoEmpleado, horafin: formattedTime });
+              }}
             />
 
             <label>Asignación</label>

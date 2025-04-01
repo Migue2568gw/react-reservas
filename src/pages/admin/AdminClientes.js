@@ -13,9 +13,7 @@ function AdminClientes() {
         .from("profiles_with_email")
         .select("*");
 
-      console.log(data);
       if (error) {
-        console.error("Error al obtener clientes:", error.message);
         toast.error("Error al obtener clientes");
       } else {
         setClientesList(data || []);

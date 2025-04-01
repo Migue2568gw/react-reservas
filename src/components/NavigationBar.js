@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase/client";
 import { useAdmin } from "../hooks/useAdmin";
+import { toast } from "react-toastify";
 
 const NavigationBar = () => {
   const { user } = useAuth();
@@ -24,7 +25,7 @@ const NavigationBar = () => {
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error("Error al cerrar sesión:", error.message);
+      toast.error("Error al cerrar sesión:");
       return;
     }
     navigate("/");
@@ -51,6 +52,9 @@ const NavigationBar = () => {
                 </Navbar.Link>
                 <Navbar.Link href="/adminServicios" className="text-white">
                   Servicios
+                </Navbar.Link>
+                <Navbar.Link href="/adminSubServicios" className="text-white">
+                  Sub servicios
                 </Navbar.Link>
                 <Navbar.Link href="/adminClientes" className="text-white">
                   Clientes
