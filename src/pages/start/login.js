@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/client";
 import { toast } from "react-toastify";
-import { useAdmin } from "../../hooks/useAdmin";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { isAdmin, loading } = useAdmin();
 
   const traducirError = (error) => {
     const traducciones = {
@@ -25,34 +23,9 @@ function Login() {
     return traducciones[error] || "Ocurrió un error. Inténtalo de nuevo.";
   };
 
-  const createProfileIfNotExists = async (user) => {
-    const { data: existingProfile, error: profileError } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("id", user.id)
-      .single();
-
-    if (profileError && profileError.code !== "PGRST116") {
-      console.error("Error al verificar perfil:", profileError.message);
-      return;
-    }
-
-    if (!existingProfile) {
-      const { error: insertError } = await supabase.from("profiles").insert({
-        id: user.id,
-        display_name: user.user_metadata?.display_name || "",
-        phone: user.user_metadata?.phone || "",
-      });
-
-      if (insertError) {
-        console.error("Error al crear perfil:", insertError.message);
-      }
-    }
-  };
-
   const handleLogin = async (e) => {
     e.preventDefault();
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -62,12 +35,7 @@ function Login() {
       return;
     }
 
-    const user = data.user;
-    if (user) {
-      await createProfileIfNotExists(user);
-    }
-    
-      navigate("/");
+    navigate("/");
   };
 
   return (

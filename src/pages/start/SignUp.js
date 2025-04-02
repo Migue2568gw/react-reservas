@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/client";
 import { toast } from "react-toastify";
+import caramel from "../../assets/images/caramel.png";
 
 function SignUp() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
+  const [nuevoCliente, setNuevoCliente] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+  });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const traducirError = (error) => {
@@ -33,38 +37,74 @@ function SignUp() {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <img src={caramel} alt="Logo de la barbería" className="loading-logo" />
+      </div>
+    );
+  }
+
   const handleSignUp = async (e) => {
     e.preventDefault();
+    setLoading(true); 
     const { data: existingUser, error: fetchError } = await supabase
-      .from("auth.users")
+      .from("profiles")
       .select("email")
-      .eq("email", email)
+      .eq("email", nuevoCliente.email)
       .single();
-  
-    if (fetchError && fetchError.code !== "PGRST116") { 
-       toast.error("Error verificando el usuario. Intenta de nuevo.");
+
+    if (fetchError && fetchError.code !== "PGRST116") {
+      toast.error("Error verificando el usuario. Intenta de nuevo.");
+      console.log(fetchError);
       return;
     }
-  
+
     if (existingUser) {
-      toast.error("El usuario ya está registrado. Intenta iniciar sesión.");
+      toast.error("Este correo ya está registrado.");
       return;
     }
-  
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
+
+    const { data: user, error } = await supabase.auth.signUp({
+      email: nuevoCliente.email,
+      password: nuevoCliente.password,
+      options: {
+        data: {
+          display_name: nuevoCliente.name,
+        },
+      },
     });
-  
+
     if (error) {
       toast.error(traducirError(error.message));
       return;
     }
-  
-    toast.success(
-      "Registro exitoso. Revisa tu correo para verificar tu cuenta."
-    );
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const creds = {
+      id: user?.user?.id || "",
+      display_name: nuevoCliente.name.toUpperCase(),
+      email: nuevoCliente.email,
+      phone: nuevoCliente.phone || "",
+      user_id: user?.user?.id || "",
+      role: "user",
+      active: false,
+    };
+
+    const { error: insertError } = await supabase
+      .from("profiles")
+      .insert(creds);
+
+    if (insertError) {
+      setLoading(false);
+      console.error("Error al crear perfil:", insertError.message);
+    } else {
+      setLoading(false);
+      toast.success("Registro exitoso. Verifica tu correo.");
+    }
   };
+
   return (
     <div className="contacto-container">
       <div className="auth-container">
@@ -74,8 +114,10 @@ function SignUp() {
             <input
               type="text"
               placeholder="Nombre completo"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={nuevoCliente.name}
+              onChange={(e) =>
+                setNuevoCliente({ ...nuevoCliente, name: e.target.value })
+              }
               required
             />
           </div>
@@ -83,8 +125,10 @@ function SignUp() {
             <input
               type="text"
               placeholder="Celular"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              value={nuevoCliente.phone}
+              onChange={(e) =>
+                setNuevoCliente({ ...nuevoCliente, phone: e.target.value })
+              }
               required
             />
           </div>
@@ -92,8 +136,10 @@ function SignUp() {
             <input
               type="email"
               placeholder="Correo"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={nuevoCliente.email}
+              onChange={(e) =>
+                setNuevoCliente({ ...nuevoCliente, email: e.target.value })
+              }
               required
             />
           </div>
@@ -101,8 +147,10 @@ function SignUp() {
             <input
               type="password"
               placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={nuevoCliente.password}
+              onChange={(e) =>
+                setNuevoCliente({ ...nuevoCliente, password: e.target.value })
+              }
               required
             />
           </div>

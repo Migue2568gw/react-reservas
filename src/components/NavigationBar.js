@@ -98,7 +98,7 @@ const NavigationBar = () => {
               Inicio
             </Navbar.Link>
             <Navbar.Link href="/login" className="text-white">
-              Empezar
+              Iniciar sesión
             </Navbar.Link>
           </>
         )}
