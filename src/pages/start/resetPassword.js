@@ -2,24 +2,27 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/client";
 import { toast } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function ResetPassword() {
   const [resetPass, setResetPass] = useState({
     password: "",
     returnPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordRtn, setShowPasswordRtn] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     async function handleToken() {
       const { data, error } = await supabase.auth.getSession();
-      
+
       if (error || !data?.session) {
         console.log(error);
         navigate("/login");
       }
     }
-    
+
     handleToken();
   }, [navigate]);
 
@@ -53,29 +56,45 @@ function ResetPassword() {
       <div className="auth-container">
         <h2>Restablecer contraseña</h2>
         <form onSubmit={handleResetPass}>
-          <div className="form-group">
+          <div className="form-group password-container">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Nueva contraseña"
               value={resetPass.password}
               onChange={(e) =>
                 setResetPass({ ...resetPass, password: e.target.value })
               }
               required
-              minLength={6}
             />
+            <button
+              type="button"
+              className="eye-btn"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
-          <div className="form-group">
+
+          <div className="form-group password-container">
             <input
-              type="password"
+              type={showPasswordRtn ? "text" : "password"}
               placeholder="Confirmar nueva contraseña"
               value={resetPass.returnPassword}
               onChange={(e) =>
-                setResetPass({ ...resetPass, returnPassword: e.target.value })
+                setResetPass({
+                  ...resetPass,
+                  returnPassword: e.target.value,
+                })
               }
               required
-              minLength={6}
             />
+            <button
+              type="button"
+              className="eye-btn"
+              onClick={() => setShowPasswordRtn(!showPasswordRtn)}
+            >
+              {showPasswordRtn ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
           <div className="btn-ok">
             <button className="btnOk" type="submit">

@@ -54,9 +54,7 @@ function Login() {
       redirectTo: `${window.location.origin}/resetpass`,
     });
 
-    if (error) {
-      toast.error("Error al enviar el correo. Verifica el correo ingresado.");
-    } else {
+    if (!error) {
       toast.success(
         "Correo de recuperación enviado. Revisa tu bandeja de entrada."
       );
@@ -64,7 +62,9 @@ function Login() {
       setTimeout(() => {
         setShowResetModal(false);
         navigate("/");
-      }, 2000);
+      }, 1500);
+    } else {
+      toast.error("Error al enviar el correo. Verifica el correo ingresado.");
     }
   };
 
