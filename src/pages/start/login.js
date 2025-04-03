@@ -51,7 +51,7 @@ function Login() {
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-      redirectTo: `http://localhost:3000/resetpass`,
+      redirectTo: `${window.location.origin}/resetpass`,
     });
 
     if (error) {
@@ -60,8 +60,11 @@ function Login() {
       toast.success(
         "Correo de recuperación enviado. Revisa tu bandeja de entrada."
       );
-      navigate("/");
-      setShowResetModal(false);
+
+      setTimeout(() => {
+        setShowResetModal(false);
+        navigate("/");
+      }, 2000);
     }
   };
 
