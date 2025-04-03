@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import logo from "../assets/images/LOGO.png";
 import { Navbar } from "flowbite-react";
 import { useAuth } from "../context/AuthContext";
@@ -11,15 +11,29 @@ const NavigationBar = () => {
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
   const navigate = useNavigate();
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 900);
+      setMenuOpen(false);
+    };
+
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
     };
 
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleSignOut = async () => {
@@ -32,7 +46,7 @@ const NavigationBar = () => {
   };
 
   return (
-    <Navbar fluid={true} rounded={true} className="bg-black">
+    <Navbar fluid={true} rounded={true} className="bg-black" ref={menuRef}>
       <Navbar.Brand href="/">
         <img src={logo} className="mr-5 logo" alt="Logo de la Aplicación" />
         <span className="self-center whitespace-nowrap text-xl font-semibold text-white">
@@ -40,27 +54,30 @@ const NavigationBar = () => {
         </span>
       </Navbar.Brand>
 
-      <Navbar.Toggle />
+      <Navbar.Toggle onClick={() => setMenuOpen(!menuOpen)} />
 
-      <Navbar.Collapse>
+      <Navbar.Collapse className={`${menuOpen ? "block" : "hidden"}`}>
         {user ? (
           isMobile ? (
             isAdmin ? (
               <>
-                <Navbar.Link href="/adminEmpleados" className="text-white">
+                <Navbar.Link href="/adminEmpleados" className="text-white" onClick={() => setMenuOpen(false)}>
                   Empleados
                 </Navbar.Link>
-                <Navbar.Link href="/adminServicios" className="text-white">
+                <Navbar.Link href="/adminServicios" className="text-white" onClick={() => setMenuOpen(false)}>
                   Servicios
                 </Navbar.Link>
-                <Navbar.Link href="/adminSubServicios" className="text-white">
+                <Navbar.Link href="/adminSubServicios" className="text-white" onClick={() => setMenuOpen(false)}>
                   Sub servicios
                 </Navbar.Link>
-                <Navbar.Link href="/adminClientes" className="text-white">
+                <Navbar.Link href="/adminClientes" className="text-white" onClick={() => setMenuOpen(false)}>
                   Clientes
                 </Navbar.Link>
                 <Navbar.Link
-                  onClick={handleSignOut}
+                  onClick={() => {
+                    handleSignOut();
+                    setMenuOpen(false);
+                  }}
                   className="text-white cursor-pointer"
                 >
                   Cerrar sesión
@@ -68,11 +85,14 @@ const NavigationBar = () => {
               </>
             ) : (
               <>
-                <Navbar.Link href="/" className="text-white">
+                <Navbar.Link href="/" className="text-white" onClick={() => setMenuOpen(false)}>
                   Inicio
                 </Navbar.Link>
                 <Navbar.Link
-                  onClick={handleSignOut}
+                  onClick={() => {
+                    handleSignOut();
+                    setMenuOpen(false);
+                  }}
                   className="text-white cursor-pointer"
                 >
                   Cerrar sesión
@@ -94,10 +114,10 @@ const NavigationBar = () => {
           )
         ) : (
           <>
-            <Navbar.Link href="/" className="text-white">
+            <Navbar.Link href="/" className="text-white" onClick={() => setMenuOpen(false)}>
               Inicio
             </Navbar.Link>
-            <Navbar.Link href="/login" className="text-white">
+            <Navbar.Link href="/login" className="text-white" onClick={() => setMenuOpen(false)}>
               Iniciar sesión
             </Navbar.Link>
           </>

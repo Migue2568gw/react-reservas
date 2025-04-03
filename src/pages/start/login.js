@@ -2,11 +2,15 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/client";
 import { toast } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const traducirError = (error) => {
     const traducciones = {
@@ -38,41 +42,107 @@ function Login() {
     navigate("/");
   };
 
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+
+    if (!resetEmail) {
+      toast.error("Por favor, ingresa tu correo electrónico.");
+      return;
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: `http://localhost:3000/resetpass`,
+    });
+
+    if (error) {
+      toast.error("Error al enviar el correo. Verifica el correo ingresado.");
+    } else {
+      toast.success(
+        "Correo de recuperación enviado. Revisa tu bandeja de entrada."
+      );
+      navigate("/");
+      setShowResetModal(false);
+    }
+  };
+
   return (
-    <div className="contacto-container">
-      <div className="auth-container">
-        <h2>Iniciar Sesión</h2>
-        <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <input
-              type="email"
-              placeholder="Correo"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+    <>
+      <div className="contacto-container">
+        <div className="auth-container">
+          <h2>Iniciar Sesión</h2>
+          <form onSubmit={handleLogin}>
+            <div className="form-group">
+              <input
+                type="email"
+                placeholder="Correo"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group password-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="eye-btn"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+            <div className="btn-ok">
+              <button className="btnOk" type="submit">
+                Ingresar
+              </button>
+            </div>
+          </form>
+          <div className="toggle-auth">
+            <span>¿No tienes una cuenta?</span>
+            <button onClick={() => navigate("/signUp")}>Registrar</button>
           </div>
-          <div className="form-group">
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="btn-ok">
-            <button className="btnOk" type="submit">
-              Ingresar
+          <div className="forgot-password">
+            <button onClick={() => setShowResetModal(true)}>
+              Olvidé mi contraseña
             </button>
           </div>
-        </form>
-        <div className="toggle-auth">
-          <span>¿No tienes una cuenta?</span>
-          <button onClick={() => navigate("/signUp")}>Registrar</button>
         </div>
       </div>
-    </div>
+      <>
+        {showResetModal && (
+          <div className="popup-overlay">
+            <div className="popup-content">
+              <h3>Recuperar contraseña</h3>
+              <form onSubmit={handleResetPassword}>
+                <input
+                  type="email"
+                  placeholder="Correo electrónico"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  required
+                />
+                <div className="popup-buttons">
+                  <button className="btn-add" type="submit">
+                    Enviar enlace
+                  </button>
+                  <button
+                    className="btn-Clo"
+                    onClick={() => setShowResetModal(false)}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </>
+    </>
   );
 }
 

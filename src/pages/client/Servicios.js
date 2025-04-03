@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { supabase } from "../../supabase/client";
+import { useAuth } from "../../context/AuthContext";
 
 function Servicios() {
   const [activeService, setActiveService] = useState(null);
   const [serviciosList, setServiciosList] = useState([]);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchServiciosConSubServicios = async () => {
@@ -34,6 +36,14 @@ function Servicios() {
     }).format(price);
   };
 
+  const handleMessage = ()=>{
+    if(user){
+      toast.warning("Selecciona a uno de nuestros especialistas para agendar.")
+    }else{
+      toast.warning("Inicia sesión para agendar con nosotros.")
+    }
+  }
+
   return (
     <div className="services-container">
       <h1 className="heading">Nuestros Servicios</h1>
@@ -54,7 +64,7 @@ function Servicios() {
               <div className="subservices-container">
                 {service.subservices && service.subservices.length > 0 ? (
                   service.subservices.map((sub) => (
-                    <div key={sub.id} className="subservice-item">
+                    <div key={sub.id} className="subservice-item" onClick={() => handleMessage()}>
                       <div className="subservice-name">{sub.name.toUpperCase()}</div>
                       <div className="subservice-details">
                         <span>{sub.duration} MIN</span>

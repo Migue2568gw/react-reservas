@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/client";
 import { toast } from "react-toastify";
 import caramel from "../../assets/images/caramel.png";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function SignUp() {
   const [nuevoCliente, setNuevoCliente] = useState({
@@ -13,6 +14,7 @@ function SignUp() {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const traducirError = (error) => {
     const traducciones = {
@@ -45,9 +47,34 @@ function SignUp() {
     );
   }
 
+  const validarDatos = (cliente) => {
+    const errores = {};
+    if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(cliente.name)) {
+      errores.name = "El nombre solo debe contener letras y espacios.";
+    }
+    if (!/^\d{10}$/.test(cliente.phone)) {
+      errores.phone =
+        "El teléfono debe tener exactamente 10 dígitos numéricos.";
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cliente.email)) {
+      errores.email = "El formato del correo es inválido.";
+    }
+    if (cliente.password.length < 6) {
+      errores.password = "La contraseña debe tener al menos 6 caracteres.";
+    }
+    return errores;
+  };
+
   const handleSignUp = async (e) => {
-    e.preventDefault();
-    setLoading(true); 
+    e.preventDefault();    
+
+    const errores = validarDatos(nuevoCliente);
+    if (Object.keys(errores).length > 0) {
+      Object.values(errores).forEach((error) => toast.error(error));
+      return;
+    }
+    
+    setLoading(true);
     const { data: existingUser, error: fetchError } = await supabase
       .from("profiles")
       .select("email")
@@ -143,9 +170,9 @@ function SignUp() {
               required
             />
           </div>
-          <div className="form-group">
+          <div className="form-group password-container">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Contraseña"
               value={nuevoCliente.password}
               onChange={(e) =>
@@ -153,6 +180,13 @@ function SignUp() {
               }
               required
             />
+            <button
+              type="button"
+              className="eye-btn"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
           <div className="btn-ok">
             <button className="btnOk" type="submit">

@@ -1,9 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/home";
 import SignUp from "./pages/start/SignUp";
 import Login from "./pages/start/login";
@@ -16,9 +12,12 @@ import EmployeeDate from "./pages/client/EmployeeDate";
 import { supabase } from "./supabase/client";
 import ResetPassword from "./pages/start/resetPassword";
 
-
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
+  const location = window.location.pathname;
+
+  if (location === "/resetpass") return children;
+
   return user ? <Navigate to="/" /> : children;
 }
 
@@ -26,7 +25,7 @@ function App() {
   const { user } = useAuth();
   useEffect(() => {
     const checkAndActivateUser = async () => {
-      if (!user) return; 
+      if (!user) return;
 
       const { data: existingProfile, error: profileError } = await supabase
         .from("profiles")
@@ -55,7 +54,7 @@ function App() {
     };
 
     checkAndActivateUser();
-  }, [user]); 
+  }, [user]);
 
   return (
     <AuthProvider>
@@ -79,7 +78,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-         <Route
+        <Route
           path="/resetpass"
           element={
             <ProtectedRoute>

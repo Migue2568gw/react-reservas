@@ -21,7 +21,6 @@ function EmployeeDate() {
     navigate("/");
     return null;
   }
-  console.log(empleado);
 
   const workHours = empleado ? {
     start: empleado.start_time,
@@ -107,9 +106,9 @@ function EmployeeDate() {
       <div className="schedule-section">
         {user ? (
           <>
-            <div className="details-section">
+            <div className="details-section">            
               <div className="calendar-container">
-                <h2>Selecciona una fecha</h2>
+              <h3>Selecciona una fecha</h3>
                 <Calendar
                   onChange={handleDateChange}
                   value={selectedDate}
@@ -206,6 +205,11 @@ function EmployeeDate() {
         ) : (
           <div className="no-auth">
             <p>Debes iniciar sesión para agendar una cita.</p>
+            <div className="btn-ok">
+            <button className="btnOk" onClick={() => navigate("/login")}>
+              Ingresar
+            </button>
+          </div>
           </div>
         )}
       </div>

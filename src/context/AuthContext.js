@@ -8,22 +8,26 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const checkUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        setUser(user.user);
+      const { data, error } = await supabase.auth.getSession();
+  
+      if (error) {
+        console.error("Error obteniendo sesión:", error);
+        return;
+      }
+  
+      if (data.session) {
+        setUser(data.session.user);
       }
     };
+  
     checkUser();
-
+  
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setUser(session?.user || null);
       }
     );
-
+  
     return () => {
       authListener.subscription?.unsubscribe();
     };
