@@ -6,14 +6,18 @@ import "./styles/style.css";
 import "./styles/styleMovile.css";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./context/AuthContext";
+import { ToastContainer } from "react-toastify";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <App />
+        <ToastContainer
+        position="bottom-right"
+        autoClose={1500}
+        hideProgressBar={false}     
+      />
       </AuthProvider>
     </BrowserRouter>
-  </React.StrictMode>
 );

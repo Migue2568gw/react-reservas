@@ -67,7 +67,9 @@ body {
     transform: rotate(360deg);
   }
 }
-
+.Toastify__toast-container {
+  z-index: 9999 !important;
+}
 /* -------------------- Login ----------------------- */
 .contacto-container {
   position: absolute;

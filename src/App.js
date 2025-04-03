@@ -3,11 +3,10 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/home";
 import SignUp from "./pages/start/SignUp";
 import Login from "./pages/start/login";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { useAuth } from "./context/AuthContext";
 import NavigationBar from "./components/NavigationBar";
 import Admin from "./pages/admin/Admin";
 import NotFound from "./pages/NotFound";
-import { ToastContainer } from "react-toastify";
 import EmployeeDate from "./pages/client/EmployeeDate";
 import { supabase } from "./supabase/client";
 import ResetPassword from "./pages/start/resetPassword";
@@ -94,18 +93,7 @@ function App() {
         />
         <Route path="/adminClientes" element={<Admin direc="clientes" />} />
         <Route path="/notfound" element={<NotFound />} />
-      </Routes>
-      <ToastContainer
-        position="top-right"
-        autoClose={1500}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+      </Routes>      
     </>
   );
 }
