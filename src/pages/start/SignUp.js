@@ -73,7 +73,7 @@ function SignUp() {
       Object.values(errores).forEach((error) => toast.error(error));
       return;
     }
-    
+
     setLoading(true);
     const { data: existingUser, error: fetchError } = await supabase
       .from("profiles")
@@ -128,6 +128,7 @@ function SignUp() {
       console.error("Error al crear perfil:", insertError.message);
     } else {
       setLoading(false);
+      navigate("/");
       toast.success("Registro exitoso. Verifica tu correo.");
     }
   };
