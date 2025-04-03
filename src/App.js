@@ -57,7 +57,7 @@ function App() {
   }, [user]);
 
   return (
-    <AuthProvider>
+    <>
       <NavigationBar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -106,7 +106,7 @@ function App() {
         draggable
         pauseOnHover
       />
-    </AuthProvider>
+    </>
   );
 }
 
