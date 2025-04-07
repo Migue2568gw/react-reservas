@@ -751,6 +751,7 @@ button {
 .dating-calendar .react-calendar__tile:hover {
   background-color: #5f5f5f;
   color: #dfdfdf;
+  border-radius: 50%;
 }
 
 h2 {

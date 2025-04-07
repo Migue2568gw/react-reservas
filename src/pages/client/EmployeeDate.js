@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Calendar from "react-calendar";
 import Select from "react-select";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 function EmployeeDate() {
   const location = useLocation();
@@ -21,57 +21,67 @@ function EmployeeDate() {
     return null;
   }
 
-  const workHours = empleado ? {
-    start: empleado.start_time,
-    end: empleado.end_time,
-  } : {
-    start: "",
-    end: "",
-  };
+  const workHours = empleado
+    ? {
+        start: empleado.start_time,
+        end: empleado.end_time,
+      }
+    : {
+        start: "",
+        end: "",
+      };
 
-  const availableTimes = generateAvailableTimes(workHours.start, workHours.end);
+  const availableTimes = generateAvailableTimes(
+    workHours.start,
+    workHours.end,
+    selectedDate
+  );
 
-  // Función para generar horarios disponibles según el rango
-  function generateAvailableTimes(startTime, endTime) {
+  function generateAvailableTimes(startTime, endTime, selectedDate) {
     const times = [];
-    let currentTime = new Date();
+    const now = new Date();
+    const bufferTime = new Date(now.getTime() + 30 * 60000); // 30 minutos a partir de ahora
+    const todayStr = now.toDateString();
+    const isToday = selectedDate && selectedDate.toDateString() === todayStr;
+
     let [startHour, startMinute] = startTime.split(":");
     let [endHour, endMinute] = endTime.split(":");
 
-    currentTime.setHours(startHour, startMinute);
+    const currentTime = new Date();
+    currentTime.setHours(parseInt(startHour), parseInt(startMinute), 0, 0);
 
-    while (
-      currentTime.getHours() < endHour ||
-      (currentTime.getHours() === endHour &&
-        currentTime.getMinutes() < endMinute)
-    ) {
-      let hours = currentTime.getHours().toString().padStart(2, "0");
-      let minutes = currentTime.getMinutes().toString().padStart(2, "0");
-      times.push(`${hours}:${minutes}`);
-      currentTime.setMinutes(currentTime.getMinutes() + 30); 
+    const endTimeDate = new Date();
+    endTimeDate.setHours(parseInt(endHour), parseInt(endMinute), 0, 0);
+
+    while (currentTime < endTimeDate) {
+      const hours = currentTime.getHours().toString().padStart(2, "0");
+      const minutes = currentTime.getMinutes().toString().padStart(2, "0");
+      const timeStr = `${hours}:${minutes}`;
+
+      if (!isToday || currentTime >= bufferTime) {
+        times.push({ value: timeStr, label: timeStr });
+      }
+
+      currentTime.setMinutes(currentTime.getMinutes() + 30);
     }
 
     return times;
   }
 
-  // Opciones de servicios (pueden ser más según el empleado)
-  const services = [
-    { value: "corte", label: "Corte de cabello" },
-    { value: "afeitado", label: "Afeitado" },
-    { value: "color", label: "Cambio de color" },
-  ];
+  const services =
+    empleado.roles?.subservices?.map((servicio) => ({
+      value: servicio.name.toUpperCase().replace(/\s+/g, "_"),
+      label: servicio.name.toUpperCase(),
+    })) || [];
 
-  // Manejar la selección de fecha
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
 
-  // Manejar la selección de hora
   const handleTimeChange = (time) => {
     setSelectedTime(time);
   };
 
-  // Manejar la selección de servicios
   const handleServicesChange = (selectedOptions) => {
     setSelectedServices(selectedOptions);
   };
@@ -92,6 +102,23 @@ function EmployeeDate() {
     toast.success("¡Cita agendada con éxito!");
   };
 
+  const calcularHoraFin = () => {
+    if (!selectedTime || selectedServices.length === 0) return selectedTime;
+
+    const totalMinutos = selectedServices.reduce((acc, service) => {
+      const servicio = empleado.roles.subservices.find(
+        (s) => s.name.toUpperCase() === service.label
+      );
+      return acc + (servicio ? parseInt(servicio.duration) : 0);
+    }, 0);
+
+    const [hour, minute] = selectedTime.split(":").map(Number);
+    const fin = new Date();
+    fin.setHours(hour, minute + totalMinutos);
+
+    return fin.toTimeString().slice(0, 5);
+  };
+
   return (
     <div className="barber-date-container">
       <div className="barber-details">
@@ -104,9 +131,9 @@ function EmployeeDate() {
       <div className="schedule-section">
         {user ? (
           <>
-            <div className="details-section">            
+            <div className="details-section">
               <div className="calendar-container">
-              <h3>Selecciona una fecha</h3>
+                <h3>Selecciona una fecha</h3>
                 <Calendar
                   onChange={handleDateChange}
                   value={selectedDate}
@@ -127,16 +154,14 @@ function EmployeeDate() {
                 <div className="selection-container">
                   <h2>Selecciona una hora</h2>
                   <Select
-                    options={availableTimes.map((time) => ({
-                      value: time,
-                      label: time,
-                    }))}
+                    options={availableTimes}
                     onChange={(option) => handleTimeChange(option?.value)}
                     value={
                       selectedTime
                         ? { value: selectedTime, label: selectedTime }
                         : null
                     }
+                    isOptionDisabled={(option) => option.isDisabled}
                     isSearchable={false}
                     classNamePrefix="select"
                     className="custom-select"
@@ -178,7 +203,7 @@ function EmployeeDate() {
                         <strong>Hora inicio:</strong> {selectedTime}
                       </p>
                       <p>
-                        <strong>Hora fin:</strong> {selectedTime}
+                        <strong>Hora fin:</strong> {calcularHoraFin()}
                       </p>
                     </div>
                     <div className="resume-info">
@@ -204,10 +229,10 @@ function EmployeeDate() {
           <div className="no-auth">
             <p>Debes iniciar sesión para agendar una cita.</p>
             <div className="btn-ok">
-            <button className="btnOk" onClick={() => navigate("/login")}>
-              Ingresar
-            </button>
-          </div>
+              <button className="btnOk" onClick={() => navigate("/login")}>
+                Ingresar
+              </button>
+            </div>
           </div>
         )}
       </div>

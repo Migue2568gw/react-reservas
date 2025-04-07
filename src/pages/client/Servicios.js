@@ -38,9 +38,9 @@ function Servicios() {
 
   const handleMessage = ()=>{
     if(user){
-      toast.warning("Selecciona a uno de nuestros especialistas para agendar.")
+      toast.info("Selecciona a uno de nuestros especialistas para agendar.")
     }else{
-      toast.warning("Inicia sesión para agendar con nosotros.")
+      toast.info("Inicia sesión para agendar con nosotros.")
     }
   }
 

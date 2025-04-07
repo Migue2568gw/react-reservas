@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { supabase } from "../../supabase/client";
 import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
@@ -14,15 +14,21 @@ function EmployeeCards() {
 
   useEffect(() => {
     const fetchEmpleados = async () => {
-      const { data, error } = await supabase
-        .from("employees")
-        .select("*, roles(name),shifts(day)");
+      const { data, error } = await supabase.from("employees").select(`
+          *,
+          roles (
+            name,
+            subservices (name, duration, price)
+          ),
+          shifts (day)
+        `);
 
       if (error) {
         toast.error("Error al obtener empleados");
-      } else {
-        setEmpleadosList(data || []);
+        return;
       }
+
+      setEmpleadosList(data || []);
     };
 
     fetchEmpleados();
@@ -48,19 +54,35 @@ function EmployeeCards() {
           modules={[EffectCoverflow, Pagination, Navigation]}
           className="swiper_container"
         >
-          {empleadosList.map(
-            (empleado) =>
-              ["barbero", "manicurista"].includes(
-                empleado.roles.name.toLowerCase()
-              ) && (
-                <SwiperSlide key={empleado.id}>
-                   <Link to="/empleado" state={{ empleado }}>
-                    <img src={empleado.photo_url} alt={empleado.name} />
-                    <p className="barber-name">{empleado.name}</p>
-                  </Link>
-                </SwiperSlide>
-              )
-          )}
+          {empleadosList.map((empleado) => {
+            const esEspecialista = ["barbero", "manicurista"].includes(
+              empleado.roles.name.toLowerCase()
+            );
+
+            const tieneServicios =
+              empleado.roles?.subservices &&
+              empleado.roles.subservices.length > 0;
+
+            if (!esEspecialista) return null;
+
+            const handleClick = (e) => {
+              if (!tieneServicios) {
+                e.preventDefault();
+                toast.info(
+                  "Nuestro especialista no tiene servicios para brindarte"
+                );
+              }
+            };
+
+            return (
+              <SwiperSlide key={empleado.id}>
+                <Link to="/empleado" state={{ empleado }} onClick={handleClick}>
+                  <img src={empleado.photo_url} alt={empleado.name} />
+                  <p className="barber-name">{empleado.name}</p>
+                </Link>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       )}
     </>
