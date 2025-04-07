@@ -5,28 +5,36 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data?.session) setUser(data.session.user);
-      setLoadingUser(false);
+      const { data, error } = await supabase.auth.getSession();
+  
+      if (error) {
+        console.error("Error obteniendo sesión:", error);
+        return;
+      }
+  
+      if (data.session) {
+        setUser(data.session.user);
+      }
     };
-
+  
     checkUser();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-    });
-
-    return () => authListener.subscription?.unsubscribe();
+  
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+  
+    return () => {
+      authListener.subscription?.unsubscribe();
+    };
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loadingUser }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
   );
 }
 
