@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase/client";
 import { useAdmin } from "../hooks/useAdmin";
-import { toast } from "react-toastify";
+import { toast } from 'sonner';
 
 const NavigationBar = () => {
   const { user } = useAuth();

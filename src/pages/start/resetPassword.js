@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/client";
-import { toast } from "react-toastify";
+import { toast } from 'sonner';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function ResetPassword() {

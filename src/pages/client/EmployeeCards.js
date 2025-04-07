@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { supabase } from "../../supabase/client";
 import { EffectCoverflow, Pagination, Navigation } from "swiper/modules";
-import { toast } from "react-toastify";
+import { toast } from 'sonner';
 import { Link } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/effect-coverflow";

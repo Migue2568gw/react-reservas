@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import { supabase } from "../../supabase/client";
-import { toast } from "react-toastify";
+import { toast } from 'sonner';
 
 const AdminEmpleados = () => {
   const [showPopupAdd, setShowPopupAdd] = useState(false);

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.1",
+    "@supabase/supabase-js": "^2.49.4",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
@@ -19,7 +19,7 @@
     "react-scripts": "5.0.1",
     "react-select": "^5.10.1",
     "react-step-wizard": "^5.3.11",
-    "react-toastify": "^11.0.5",
+    "sonner": "^2.0.3",
     "swiper": "^11.2.6",
     "web-vitals": "^2.1.4"
   },

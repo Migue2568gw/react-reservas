@@ -3,8 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Calendar from "react-calendar";
 import Select from "react-select";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from 'sonner';
 
 function EmployeeDate() {
   const location = useLocation();
@@ -95,7 +94,6 @@ function EmployeeDate() {
 
   return (
     <div className="barber-date-container">
-      <ToastContainer />
       <div className="barber-details">
         <h1>{empleado.name}</h1>
         <div className="image-container">

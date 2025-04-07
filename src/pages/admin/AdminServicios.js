@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../supabase/client";
-import { toast } from "react-toastify";
+import { toast } from 'sonner';
 
 function AdminServicios() {
   const [showPopupAdd, setShowPopupAdd] = useState(false);

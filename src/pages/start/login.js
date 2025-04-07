@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/client";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { AuthError } from "../../utils/AuthError";
+import caramel from "../../assets/images/caramel.png";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -11,38 +13,42 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [showResetModal, setShowResetModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const traducirError = (error) => {
-    const traducciones = {
-      "Invalid login credentials":
-        "Credenciales inválidas. Verifica tu correo y contraseña.",
-      "Email not confirmed":
-        "El correo no ha sido confirmado. Revisa tu bandeja de entrada.",
-      "User not found": "Usuario no encontrado. Verifica tu correo.",
-      "Password should be at least 6 characters":
-        "La contraseña debe tener al menos 6 caracteres.",
-      "Auth API error: invalid_grant": "Correo o contraseña incorrectos.",
-    };
-
-    return traducciones[error] || "Ocurrió un error. Inténtalo de nuevo.";
-  };
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <img src={caramel} alt="Logo de la barbería" className="loading-logo" />
+      </div>
+    );
+  }
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
 
-    if (error) {
-      toast.error(traducirError(error.message));
-      return;
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.log("ingreso");
+        toast.error(AuthError.get(error.code));
+        return;
+      }
+
+      navigate("/");
+    } catch (err) {
+      console.error("Error inesperado: ", err.message);
+      toast.error("Ocurrió un error inesperado. Intenta de nuevo.", {
+        duration: 1500,
+      });
     }
-
-    navigate("/");
   };
 
   const handleResetPassword = async (e) => {
+    setLoading(true);
     e.preventDefault();
 
     if (!resetEmail) {
@@ -61,9 +67,11 @@ function Login() {
 
       setTimeout(() => {
         setShowResetModal(false);
+        setLoading(false);
         navigate("/");
-      }, 1500);
+      }, 1000);
     } else {
+      setLoading(false);
       toast.error("Error al enviar el correo. Verifica el correo ingresado.");
     }
   };

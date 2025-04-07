@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/client";
-import { toast } from "react-toastify";
+import { toast } from 'sonner';
 import caramel from "../../assets/images/caramel.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { AuthError } from "../../utils/AuthError";
 
 function SignUp() {
   const [nuevoCliente, setNuevoCliente] = useState({
@@ -15,29 +16,6 @@ function SignUp() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-
-  const traducirError = (error) => {
-    const traducciones = {
-      "User already registered": "El usuario ya está registrado.",
-      "Password should be at least 6 characters":
-        "La contraseña debe tener al menos 6 caracteres.",
-      "Email format is invalid": "El formato del correo es inválido.",
-      "Error sending confirmation email":
-        "Error al enviar el correo de confirmación.",
-      "Auth API error: invalid_email": "El correo ingresado no es válido.",
-      "Signup requires a valid email":
-        "Debes ingresar un correo válido para registrarte.",
-      "Network request failed":
-        "Error de conexión. Revisa tu internet e inténtalo de nuevo.",
-      "Unable to validate email address: invalid format":
-        "No se pudo validar la dirección de correo. Revisa el formato.",
-    };
-
-    return (
-      traducciones[error] ||
-      "Ocurrió un error al registrarte. Inténtalo nuevamente."
-    );
-  };
 
   if (loading) {
     return (
@@ -103,7 +81,7 @@ function SignUp() {
     });
 
     if (error) {
-      toast.error(traducirError(error.message));
+      toast.error(AuthError.get(error.code));
       return;
     }
 

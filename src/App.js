@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import EmployeeDate from "./pages/client/EmployeeDate";
 import { supabase } from "./supabase/client";
 import ResetPassword from "./pages/start/resetPassword";
+import { Toaster } from "sonner";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -38,7 +39,6 @@ function App() {
       }
 
       if (existingProfile && !existingProfile.active) {
-        // Si el usuario existe pero no está activo, actualizarlo
         const { error: updateError } = await supabase
           .from("profiles")
           .update({ active: true })
@@ -57,6 +57,7 @@ function App() {
 
   return (
     <>
+      <Toaster richColors position="top-right" duration={1500} />
       <NavigationBar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -93,7 +94,7 @@ function App() {
         />
         <Route path="/adminClientes" element={<Admin direc="clientes" />} />
         <Route path="/notfound" element={<NotFound />} />
-      </Routes>      
+      </Routes>
     </>
   );
 }
