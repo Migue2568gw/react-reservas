@@ -143,7 +143,7 @@ function AdminServicios() {
 
   const handleEliminar = async (idServicio) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("services")
         .delete()
         .eq("id", idServicio);

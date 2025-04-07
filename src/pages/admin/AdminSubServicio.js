@@ -194,7 +194,7 @@ function AdminSubServicios() {
 
     const handleEliminar = async (idSubServicio) => {
       try {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from("subservices")
           .delete()
           .eq("id", idSubServicio);

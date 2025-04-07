@@ -6,10 +6,10 @@ import Client from "./client/Client";
 import { useAuth } from "../context/AuthContext";
 
 function Home() {
-  const { isAdmin, loading } = useAdmin();
-  const { user } = useAuth();
+  const { user, loadingUser } = useAuth();
+  const { isAdmin, loading: loadingAdmin } = useAdmin();
 
-  if (loading) {
+  if (loadingUser || loadingAdmin) {
     return (
       <div className="loading-container">
         <img src={caramel} alt="Logo de la barbería" className="loading-logo" />
@@ -17,11 +17,7 @@ function Home() {
     );
   }
 
-  return (
-    <>
-      {!user ? <Client /> : isAdmin ? <Admin /> : <Client />}
-    </>
-  );
+  return <>{!user ? <Client /> : isAdmin ? <Admin /> : <Client />}</>;
 }
 
 export default Home;
