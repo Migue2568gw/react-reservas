@@ -4,7 +4,7 @@ import { supabase } from "../../supabase/client";
 import { toast } from "sonner";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { AuthError } from "../../utils/AuthError";
-import caramel from "../../assets/images/caramel.png";
+import LoadingScreen from "../../components/LoadingScreen";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -16,11 +16,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <img src={caramel} alt="Logo de la barbería" className="loading-logo" />
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   const handleLogin = async (e) => {

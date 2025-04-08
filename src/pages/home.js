@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Admin from "./admin/Admin";
 import { useAdmin } from "../hooks/useAdmin";
-import caramel from "../assets/images/caramel.png";
 import Client from "./client/Client";
 import { useAuth } from "../context/AuthContext";
+import LoadingScreen from "../components/LoadingScreen";
 
 function Home() {
   const { user } = useAuth();
@@ -15,11 +15,7 @@ function Home() {
   }, [user]);
 
   if (loadingAdmin) {
-    return (
-      <div className="loading-container">
-        <img src={caramel} alt="Logo de la barbería" className="loading-logo" />
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (

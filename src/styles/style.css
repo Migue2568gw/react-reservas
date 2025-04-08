@@ -641,10 +641,11 @@ button {
 }
 
 .barber-details {
-  flex: 1;
   min-width: 300px;
   max-width: 500px;
   text-align: center;
+  flex: 1 1 45%;
+  margin: 10px;
 }
 
 .barber-details h1 {
@@ -662,28 +663,20 @@ button {
 .image-container {
   width: 80%;
   margin: 0 auto;
+  position: relative;
 }
 
 .schedule-section {
-  flex: 1;
-  min-width: 300px;
-  max-width: 600px;
+  flex: 1 1 45%;
+  padding: 10px;
+  height: 100%;
 }
 
 .no-auth {
   text-align: center;
 }
 
-.details-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  background-color: #3d3d3d;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-  margin-top: 10px;
-}
+
 
 .calendar-container {
   flex: 2;
@@ -693,19 +686,19 @@ button {
 .dating-calendar {
   background: transparent;
   border: none;
-  color: #fff;
+  color: var(--white);
   width: 100%;
 }
 
 .dating-calendar .react-calendar__tile--active,
 .dating-calendar .react-calendar__tile:hover {
   background-color: #5f5f5f;
-  color: #dfdfdf;
+  color: var(--gray-light);
   border-radius: 50%;
 }
 
 h2 {
-  color: #dfdfdf;
+  color:var(--gray-light);
 }
 
 .past-day {
@@ -713,6 +706,14 @@ h2 {
   color: #919191;
   border-radius: 50%;
   font-weight: bold;
+}
+
+.selection-container {
+  width: 440.891px;
+  transform: translate(7px, 107px);
+  position: relative;
+  transition: none;
+  cursor: move;
 }
 
 .custom-select .select__control {
@@ -738,15 +739,46 @@ h2 {
   background-color: #5f5f5f !important;
 }
 
+.details-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  background-color: #3d3d3d;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  margin-top: 10px;
+}
+
+.resume-section {
+  width: 100%; 
+  max-width: 873px;
+  height: auto;
+  padding: 15px; 
+  margin: 0 auto;
+}
+
+.resume-section .btnAdd {
+  margin-top: 20px; 
+  width: 100%;
+  max-width: 675px; 
+  height: 54px;
+  cursor: pointer; 
+  position: relative; left: 112px; top: -3px; transition: none; 
+}
+
 .resume-info {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap; 
+  gap: 10px; 
+  margin-bottom: 15px;
   width: 100%;
-  margin-bottom: 10px;
 }
 
 .resume-info p {
-  width: 48%;
+  flex: 1 1 45%;
+  min-width: 200px; 
   margin: 0;
   font-size: 1.3rem;
   color: #fff;

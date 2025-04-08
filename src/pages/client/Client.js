@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import EmployeeCards from "./EmployeeCards";
 import Servicios from "./Servicios";
-import caramel from "../../assets/images/caramel.png";
+import LoadingScreen from "../../components/LoadingScreen";
 
 function Client() {
   const [isLoading, setIsLoading] = useState(true);
@@ -15,11 +15,7 @@ function Client() {
   }, []);
 
     if (isLoading) {
-      return (
-        <div className="loading-container">
-          <img src={caramel} alt="Logo de la barbería" className="loading-logo" />
-        </div>
-      );
+      return <LoadingScreen />;
     }
 
   return (

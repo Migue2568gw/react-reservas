@@ -11,6 +11,7 @@ import EmployeeDate from "./pages/client/EmployeeDate";
 import { supabase } from "./supabase/client";
 import ResetPassword from "./pages/start/resetPassword";
 import { Toaster } from "sonner";
+import ClienteMisCitas from "./pages/client/ClienteMisCitas";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -84,6 +85,12 @@ function App() {
             <ProtectedRoute>
               <ResetPassword />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/miscitas"
+          element={
+              <ClienteMisCitas />
           }
         />
         <Route path="/adminEmpleados" element={<Admin direc="empleados" />} />

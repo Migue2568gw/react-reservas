@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabase/client";
 import { toast } from 'sonner';
-import caramel from "../../assets/images/caramel.png";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { AuthError } from "../../utils/AuthError";
+import LoadingScreen from "../../components/LoadingScreen";
 
 function SignUp() {
   const [nuevoCliente, setNuevoCliente] = useState({
@@ -18,11 +18,7 @@ function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <img src={caramel} alt="Logo de la barbería" className="loading-logo" />
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   const validarDatos = (cliente) => {
