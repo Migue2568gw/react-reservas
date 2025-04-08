@@ -5,11 +5,11 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase/client";
 import { useAdmin } from "../hooks/useAdmin";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 const NavigationBar = () => {
   const { user } = useAuth();
-  const { isAdmin } = useAdmin();
+  const { isAdmin, loading } = useAdmin();
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -45,6 +45,8 @@ const NavigationBar = () => {
     navigate("/");
   };
 
+  if (user && loading) return null;
+
   return (
     <Navbar fluid={true} rounded={true} className="bg-black" ref={menuRef}>
       <Navbar.Brand href="/">
@@ -58,19 +60,35 @@ const NavigationBar = () => {
 
       <Navbar.Collapse className={`${menuOpen ? "block" : "hidden"}`}>
         {user ? (
-          isMobile ? (
+          loading ? null : isMobile ? (
             isAdmin ? (
               <>
-                <Navbar.Link href="/adminEmpleados" className="text-white" onClick={() => setMenuOpen(false)}>
+                <Navbar.Link
+                  href="/adminEmpleados"
+                  className="text-white"
+                  onClick={() => setMenuOpen(false)}
+                >
                   Empleados
                 </Navbar.Link>
-                <Navbar.Link href="/adminServicios" className="text-white" onClick={() => setMenuOpen(false)}>
+                <Navbar.Link
+                  href="/adminServicios"
+                  className="text-white"
+                  onClick={() => setMenuOpen(false)}
+                >
                   Servicios
                 </Navbar.Link>
-                <Navbar.Link href="/adminSubServicios" className="text-white" onClick={() => setMenuOpen(false)}>
+                <Navbar.Link
+                  href="/adminSubServicios"
+                  className="text-white"
+                  onClick={() => setMenuOpen(false)}
+                >
                   Sub servicios
                 </Navbar.Link>
-                <Navbar.Link href="/adminClientes" className="text-white" onClick={() => setMenuOpen(false)}>
+                <Navbar.Link
+                  href="/adminClientes"
+                  className="text-white"
+                  onClick={() => setMenuOpen(false)}
+                >
                   Clientes
                 </Navbar.Link>
                 <Navbar.Link
@@ -85,7 +103,11 @@ const NavigationBar = () => {
               </>
             ) : (
               <>
-                <Navbar.Link href="/" className="text-white" onClick={() => setMenuOpen(false)}>
+                <Navbar.Link
+                  href="/"
+                  className="text-white"
+                  onClick={() => setMenuOpen(false)}
+                >
                   Inicio
                 </Navbar.Link>
                 <Navbar.Link
@@ -114,10 +136,18 @@ const NavigationBar = () => {
           )
         ) : (
           <>
-            <Navbar.Link href="/" className="text-white" onClick={() => setMenuOpen(false)}>
+            <Navbar.Link
+              href="/"
+              className="text-white"
+              onClick={() => setMenuOpen(false)}
+            >
               Inicio
             </Navbar.Link>
-            <Navbar.Link href="/login" className="text-white" onClick={() => setMenuOpen(false)}>
+            <Navbar.Link
+              href="/login"
+              className="text-white"
+              onClick={() => setMenuOpen(false)}
+            >
               Iniciar sesión
             </Navbar.Link>
           </>
